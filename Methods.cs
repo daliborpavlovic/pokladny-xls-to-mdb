@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Data.OleDb;
 using ADOX;
 using System.IO;
 using System.Collections.Generic;
@@ -10,9 +12,14 @@ namespace Pokladna
 {
     public static class Methods
     {
-        public static void CreateDatabase(string file)
+        public static string ConnectionString(string file)
         {
-            CatalogClass cat = new CatalogClass();
+            return String.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0}", file);
+        }
+
+        public static Catalog CreateDatabase(string file)
+        {
+            Catalog catalog = new Catalog();
             
             if (File.Exists(file))
             {
@@ -29,20 +36,64 @@ namespace Pokladna
 
             try
             {
-                cat.Create(Methods.ConnectionString(file));
+                catalog.Create(Methods.ConnectionString(file));
                 Log.WriteLog("Database created: " + file);
             }
             catch (Exception e)
             {
 
-                Log.WriteErrorLog("Error cretating new database file" + e.Message);
+                Log.WriteErrorLog("Error cretating new database file: " + e.Message);
             }
-            
+
+            return catalog;
         }
 
-        public static string ConnectionString(string file)
+        public static void CreateTable(Catalog catalog, string tableName)
         {
-            return String.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0}", file);
+            Table table = new Table();
+            table.Name = tableName;
+
+            table.Columns.Append("Id", DataTypeEnum.adInteger);
+            table.Columns.Append("Datum", DataTypeEnum.adDate);
+            table.Columns.Append("CisloDokladu", DataTypeEnum.adVarWChar, 7);
+            table.Columns.Append("Popis", DataTypeEnum.adVarWChar, 100);
+            table.Columns.Append("Pohyb", DataTypeEnum.adInteger);
+            table.Columns.Append("Castka", DataTypeEnum.adInteger);
+
+            try
+            {
+                catalog.Tables.Append(table);
+            }
+            catch (Exception e)
+            {
+
+                Log.WriteErrorLog("Error cretating table in the new database file: " + e.Message);
+            }
+
         }
+
+        public static DataSet GetData(string file)
+        {
+            string query = "SELECT * FROM Data";
+            OleDbConnection connection = new OleDbConnection(Methods.ConnectionString(file));
+            DataSet dataset = new DataSet("Data");
+
+            try
+            {
+                using (var adapter = new OleDbDataAdapter(query, connection))
+                {
+                    adapter.Fill(dataset);
+                }
+
+            }
+            catch (Exception e)
+            {
+
+                Log.WriteErrorLog("Cannot retrieve data from Access database: " + e.Message);
+            }
+
+            return dataset;
+        }
+
     }
 }

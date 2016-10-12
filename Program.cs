@@ -1,7 +1,7 @@
 ﻿using System;
 using ADOX;
+using System.Data;
 using System.IO;
-using System.Data.OleDb;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,23 +13,21 @@ namespace Pokladna
     {
         static void Main(string[] args)
         {
+            string sourceFile = @"Pokladna.mdb";
+            string destinationFile = @"PokladnaToPohoda.mdb";
+
             // create new access dtb file
-            string file = @"PokladnaToPohoda.mdb";
-            Methods.CreateDatabase(file);
+            Catalog catalog = Methods.CreateDatabase(destinationFile);
+
+            // create tables in access dtb
+            Methods.CreateTable(catalog, "Prijmy");
+            Methods.CreateTable(catalog, "Vydaje");
+
+            // prepare dataset for the source data
+            DataSet dataset = Methods.GetData(sourceFile);
 
 
-            // create table in access dtb
-            //using (var connection = new OleDbConnection(Methods.ConnectionString(file)))
-            //{
 
-            //}
-
-            Catalog cat = new Catalog();
-            Table tableIncome = new Table();
-            Table tableOutcome = new Table();
-
-            tableIncome.Name = "Prijmy";
-            tableOutcome.Name = "Vydaje";
         }
     }
 }

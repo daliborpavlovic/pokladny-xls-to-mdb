@@ -23,7 +23,7 @@ namespace Pokladna
 
         public static void WriteErrorLog(string message)
         {
-            Log.WriteLog(message);
+            Log.WriteLog("ERROR: " + message);
             Environment.Exit(1);
         }
     }
