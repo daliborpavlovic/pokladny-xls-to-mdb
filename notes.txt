@@ -1,0 +1,5 @@
+create table in access dtb
+compare the table with source table
+prepare dataset for the source access data 
+get dat from source table into data set
+insert the data into access database
