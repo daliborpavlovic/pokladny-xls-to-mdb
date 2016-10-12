@@ -30,7 +30,7 @@ namespace Pokladna
                 catch (Exception e)
                 {
 
-                    Log.WriteErrorLog("Error deleting old database file: " + e.Message);
+                    Log.WriteErrorLog("Cannot delete old database file: " + e.Message);
                 }
             }
 
@@ -42,7 +42,7 @@ namespace Pokladna
             catch (Exception e)
             {
 
-                Log.WriteErrorLog("Error cretating new database file: " + e.Message);
+                Log.WriteErrorLog("Cannot create new database file: " + e.Message);
             }
 
             return catalog;
@@ -67,33 +67,31 @@ namespace Pokladna
             catch (Exception e)
             {
 
-                Log.WriteErrorLog("Error cretating table in the new database file: " + e.Message);
+                Log.WriteErrorLog("Cannot create table in the new database file: " + e.Message);
             }
 
         }
 
-        public static DataSet GetData(string file)
+        public static DataSet GetData(string file, string tableName, DataSet dataset)
         {
-            string query = "SELECT * FROM Data";
+            string query = String.Format("SELECT * FROM Data WHERE CisloDokladu LIKE '{0}%'", tableName.Substring(0,1));
             OleDbConnection connection = new OleDbConnection(Methods.ConnectionString(file));
-            DataSet dataset = new DataSet("Data");
 
             try
             {
                 using (var adapter = new OleDbDataAdapter(query, connection))
                 {
+                    adapter.TableMappings.Add("Table", tableName);
                     adapter.Fill(dataset);
                 }
 
             }
             catch (Exception e)
             {
-
                 Log.WriteErrorLog("Cannot retrieve data from Access database: " + e.Message);
             }
 
             return dataset;
         }
-
     }
 }
