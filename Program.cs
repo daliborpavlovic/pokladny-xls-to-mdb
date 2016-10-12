@@ -15,21 +15,26 @@ namespace Pokladna
         {
             string sourceFile = @"Pokladna.mdb";
             string destinationFile = @"PokladnaToPohoda.mdb";
-            string tableIncomeName = "Prijmy";
-            string tableOutcomeName = "Vydaje";
+            string[] tableNames = { "Prijmy", "Vydaje" };
 
             // create new access dtb file
             Catalog catalog = Methods.CreateDatabase(destinationFile);
 
             // create tables in access dtb
-            Methods.CreateTable(catalog, tableIncomeName);
-            Methods.CreateTable(catalog, tableOutcomeName);
-
+            foreach (string tableName in tableNames)
+            {
+                Methods.CreateTable(catalog, tableName);
+            }
+            
             // prepare dataset for the source data
             DataSet dataset = new DataSet();
-            dataset = Methods.GetData(sourceFile, tableIncomeName, dataset);
-            dataset = Methods.GetData(sourceFile, tableOutcomeName, dataset);
 
+            // get data from the source file
+            foreach (string tableName in tableNames)
+            {
+                dataset = Methods.GetData(sourceFile, tableName, dataset);
+            }
+            
             // insert data from dataset into the destination file
             // Methods.InsertData(destinationFile);
         }
