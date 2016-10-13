@@ -30,7 +30,7 @@ namespace Pokladna
                 DataSet dataset = Methods.GetData(sourceFile, tableName);
 
                 // insert data from dataset into the destination file
-                Methods.InsertData(destinationFile, tableName, dataset);
+                //Methods.InsertData(destinationFile, tableName, dataset);
             }            
         }
     }
