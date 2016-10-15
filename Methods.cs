@@ -90,12 +90,13 @@ namespace Pokladna
             catch (Exception e)
             {
 
-                Log.WriteErrorLog(String.Format("Cannot create column in the database table {0}: ", table) + e.Message);
+                Log.WriteErrorLog(String.Format("Cannot create columns in the database table {0}: ", table) + e.Message);
             }
 
             try
             {
                 catalog.Tables.Append(table);
+                Log.WriteLog(String.Format("Database table {0} created", table.Name));
             }
             catch (Exception e)
             {
@@ -117,6 +118,8 @@ namespace Pokladna
                 {
                     adapter.TableMappings.Add("Table", tableName);
                     adapter.Fill(dataSet);
+                    Log.WriteLog(String.Format("Data received from the file {0} successfully", file));
+
                 }
 
             }
@@ -130,35 +133,27 @@ namespace Pokladna
 
         public static void InsertData(string file, string tableName, DataSet dataSet)
         {
-            //string command = "INSERT INTO @Table (Id, Datum, CisloDokladu, Popis, Pohyb, Castka) VALUES (@Id, @Datum, @CisloDokladu, @Popis, @Pohyb, @Castka)";
-            string insertString = String.Format("INSERT INTO {0}([Popis]) VALUES (?);", tableName); //@Table, @CisloDokladu, @Id
+            string insertString = String.Format("INSERT INTO {0}([Id], [Datum], [CisloDokladu], [Popis], [Pohyb], [Castka]) VALUES " + 
+                "(?, ?, ?, ?, ?, ?);", tableName); // 6 parameters
             var adapter = new OleDbDataAdapter();
 
             try
             {
                 using (var connection = new OleDbConnection(Methods.ConnectionString(file)))
                 {
-
-                    // var command = new OleDbCommand(insertString, connection);
-                    // adapter.InsertCommand = command;
-                    adapter.InsertCommand = new OleDbCommand(insertString);
-                    adapter.InsertCommand.Connection = connection;
-                    adapter.InsertCommand.Parameters.Add("param1", OleDbType.VarWChar, 100, "Popis");
-
-                    //adapter.InsertCommand = new OleDbCommand(command, connection);
-                    //adapter.InsertCommand.Parameters.Add("@Table", OleDbType.VarChar, 6, "Table");
-                    //adapter.InsertCommand.Parameters.Add("CisloDokladu", OleDbType.VarChar, 100, "CisloDokladu");
-                    //adapter.InsertCommand.Parameters.Add("@Id", OleDbType.VarChar, 1000, "Id");
-                    //adapter.InsertCommand.Parameters.Add("@Datum", OleDbType.DBDate);
-                    //adapter.InsertCommand.Parameters.Add("@CisloDokladu", OleDbType.VarChar, 7, "CisloDokladu");
-                    //adapter.InsertCommand.Parameters.Add("@Popis", OleDbType.VarChar, 100, "Popis");
-                    //adapter.InsertCommand.Parameters.Add("@Pohyb", OleDbType.VarChar, 6, "Pohyb");
-                    //adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.VarChar, 6, "Castka");
+                    adapter.InsertCommand = new OleDbCommand(insertString, connection);
+                    adapter.InsertCommand.Parameters.Add("@Id", OleDbType.Integer, 0, "Id");
+                    adapter.InsertCommand.Parameters.Add("@Datum", OleDbType.DBDate, 20, "Datum");
+                    adapter.InsertCommand.Parameters.Add("@CisloDokladu", OleDbType.VarWChar, 7, "CisloDokladu");
+                    adapter.InsertCommand.Parameters.Add("@Popis", OleDbType.VarWChar, 100, "Popis");
+                    adapter.InsertCommand.Parameters.Add("@Pohyb", OleDbType.Integer, 0, "Pohyb");
+                    adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.Numeric, 20, "Castka");
 
                     connection.Open();
                     try
                     {
                         adapter.Update(dataSet, tableName);
+                        Log.WriteLog(String.Format("Data inserted into destination database file {0} table {1}", file, tableName));
                     }
                     catch (Exception e)
                     {

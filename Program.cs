@@ -14,7 +14,7 @@ namespace Pokladna
         static void Main(string[] args)
         {
             string sourceFile = @"Pokladna.mdb";
-            string destinationFile = @"C:\Users\dalibor.pavlovic\Documents\temp\Pokladna\Pokladna\bin\Debug\PokladnaToPohoda.mdb";
+            string destinationFile = @"PokladnaToPohoda.mdb";
             string[] tableNames = { "Prijmy", "Vydaje" };
 
             // create destination database file
