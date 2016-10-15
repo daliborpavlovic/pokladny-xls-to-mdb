@@ -138,7 +138,7 @@ namespace Pokladna
 
             try
             {
-                using (var connection = new OleDbConnection(Methods.ConnectionString(file)))
+                using (var connection = new OleDbConnection(ConnectionString(file)))
                 {
                     var adapter = new OleDbDataAdapter();
                     adapter.InsertCommand = new OleDbCommand(insertString, connection);
