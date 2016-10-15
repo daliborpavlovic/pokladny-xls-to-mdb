@@ -125,7 +125,7 @@ namespace Pokladna
             }
             catch (Exception e)
             {
-                Log.WriteErrorLog(String.Format("Cannot retrieve data from Access database file {0}: ", file) + e.Message);
+                Log.WriteErrorLog(String.Format("Cannot retrieve data from database file {0}", file) + e.Message);
             }
 
             return SetDataRowsAdded(dataSet, tableName);
@@ -135,19 +135,19 @@ namespace Pokladna
         {
             string insertString = String.Format("INSERT INTO {0}([Id], [Datum], [CisloDokladu], [Popis], [Pohyb], [Castka]) VALUES " + 
                 "(?, ?, ?, ?, ?, ?);", tableName); // 6 parameters
-            var adapter = new OleDbDataAdapter();
 
             try
             {
                 using (var connection = new OleDbConnection(Methods.ConnectionString(file)))
                 {
+                    var adapter = new OleDbDataAdapter();
                     adapter.InsertCommand = new OleDbCommand(insertString, connection);
                     adapter.InsertCommand.Parameters.Add("@Id", OleDbType.Integer, 0, "Id");
-                    adapter.InsertCommand.Parameters.Add("@Datum", OleDbType.DBDate, 20, "Datum");
+                    adapter.InsertCommand.Parameters.Add("@Datum", OleDbType.DBDate, 0, "Datum");
                     adapter.InsertCommand.Parameters.Add("@CisloDokladu", OleDbType.VarWChar, 7, "CisloDokladu");
                     adapter.InsertCommand.Parameters.Add("@Popis", OleDbType.VarWChar, 100, "Popis");
                     adapter.InsertCommand.Parameters.Add("@Pohyb", OleDbType.Integer, 0, "Pohyb");
-                    adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.Numeric, 20, "Castka");
+                    adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.Numeric, 0, "Castka");
 
                     connection.Open();
                     try
