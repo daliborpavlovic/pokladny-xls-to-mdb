@@ -14,7 +14,7 @@ namespace Pokladna
         static void Main(string[] args)
         {
             string sourceFile = @"Pokladna.mdb";
-            string destinationFile = @"PokladnaToPohoda.mdb";
+            string destinationFile = @"C:\Users\dalibor.pavlovic\Documents\temp\Pokladna\Pokladna\bin\Debug\PokladnaToPohoda.mdb";
             string[] tableNames = { "Prijmy", "Vydaje" };
 
             // create destination database file
@@ -30,7 +30,7 @@ namespace Pokladna
                 DataSet dataset = Methods.GetData(sourceFile, tableName);
 
                 // insert data from dataset into the destination file
-                //Methods.InsertData(destinationFile, tableName, dataset);
+                Methods.InsertData(destinationFile, tableName, dataset);
             }            
         }
     }

@@ -109,14 +109,14 @@ namespace Pokladna
         {
             string query = String.Format("SELECT * FROM Data WHERE CisloDokladu LIKE '{0}%'", tableName.Substring(0,1));
             OleDbConnection connection = new OleDbConnection(Methods.ConnectionString(file));
-            DataSet dataset = new DataSet();
+            DataSet dataSet = new DataSet();
 
             try
             {
                 using (var adapter = new OleDbDataAdapter(query, connection))
                 {
                     adapter.TableMappings.Add("Table", tableName);
-                    adapter.Fill(dataset);
+                    adapter.Fill(dataSet);
                 }
 
             }
@@ -125,25 +125,25 @@ namespace Pokladna
                 Log.WriteErrorLog(String.Format("Cannot retrieve data from Access database file {0}: ", file) + e.Message);
             }
 
-            return dataset;
+            return SetDataRowsAdded(dataSet, tableName);
         }
 
-        public static void InsertData(string file, string tableName, DataSet dataset)
+        public static void InsertData(string file, string tableName, DataSet dataSet)
         {
             //string command = "INSERT INTO @Table (Id, Datum, CisloDokladu, Popis, Pohyb, Castka) VALUES (@Id, @Datum, @CisloDokladu, @Popis, @Pohyb, @Castka)";
-            string insertString = String.Format("INSERT INTO {0} ([Id]) VALUES (1)", tableName); //@Table, @CisloDokladu, @Id
+            string insertString = String.Format("INSERT INTO {0}([Popis]) VALUES (?);", tableName); //@Table, @CisloDokladu, @Id
+            var adapter = new OleDbDataAdapter();
 
             try
             {
                 using (var connection = new OleDbConnection(Methods.ConnectionString(file)))
                 {
-                    connection.Open();
-                    var adapter = new OleDbDataAdapter();
-                    var command = new OleDbCommand(insertString, connection);
-                    var table = dataset.Tables[tableName];
 
-                    //command.Parameters.Add("CisloDokladu", OleDbType.LongVarChar, 100, dataset.Tables[tableName].Columns["CisloDokladu"].ToString() ?? DBNull.Value.ToString());
-                    //command.Parameters.Add("@Id", OleDbType.Integer);
+                    // var command = new OleDbCommand(insertString, connection);
+                    // adapter.InsertCommand = command;
+                    adapter.InsertCommand = new OleDbCommand(insertString);
+                    adapter.InsertCommand.Connection = connection;
+                    adapter.InsertCommand.Parameters.Add("param1", OleDbType.VarWChar, 100, "Popis");
 
                     //adapter.InsertCommand = new OleDbCommand(command, connection);
                     //adapter.InsertCommand.Parameters.Add("@Table", OleDbType.VarChar, 6, "Table");
@@ -155,21 +155,16 @@ namespace Pokladna
                     //adapter.InsertCommand.Parameters.Add("@Pohyb", OleDbType.VarChar, 6, "Pohyb");
                     //adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.VarChar, 6, "Castka");
 
-                    adapter.InsertCommand = command;
-
+                    connection.Open();
                     try
                     {
-                        //adapter.InsertCommand.ExecuteNonQuery();
-                        adapter.Update(dataset, tableName);
+                        adapter.Update(dataSet, tableName);
                     }
                     catch (Exception e)
                     {
 
                         Log.WriteErrorLog(String.Format("Cannot insert data into destination Access database file {0}: ", file) + e.Message);
                     }
-                    
-                    //adapter.Update(dataset.Tables[tableName]);
-
                 }
            
             }
@@ -177,6 +172,17 @@ namespace Pokladna
             {
                 Log.WriteErrorLog("Database connection error: " + e.Message);
             }
+        }
+
+        public static DataSet SetDataRowsAdded(DataSet dataSet, string tableName)
+        {
+            foreach (DataRow row in dataSet.Tables[tableName].Rows)
+            {
+                row.SetAdded();
+            }
+
+            return dataSet;
+            
         }
     }
 }
