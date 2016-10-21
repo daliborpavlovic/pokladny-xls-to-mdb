@@ -34,6 +34,9 @@ namespace Pokladna
                     // insert data from dataset into the destination file
                     Methods.InsertData(destinationFile, tableName, dataset);
                 }
+
+            Console.WriteLine("Program finished successfully!");
+            Console.ReadLine();
         }
     }
 }

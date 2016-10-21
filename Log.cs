@@ -17,7 +17,9 @@ namespace Pokladna
             string newLine = "\r\n";
             using (StreamWriter sw = File.AppendText(file))
             {
-                sw.Write(DateTime.Now.ToString("g") + " " + message.Trim() + newLine);
+                message = DateTime.Now.ToString("g") + " " + message.Trim() + newLine;
+                sw.Write(message);
+                Console.WriteLine(message);
             }
         }
 
@@ -27,10 +29,9 @@ namespace Pokladna
             Environment.Exit(1);
         }
 
-        public static void WriteConsoleLog(string message)
+        public static void WriteWarningLog(string message)
         {
-            Console.WriteLine(message);
-            Log.WriteLog("CONSOLE: " + message);
+            Log.WriteLog("WARNING: " + message);
         }
     }
 }

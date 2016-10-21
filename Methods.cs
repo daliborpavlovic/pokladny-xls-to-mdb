@@ -198,13 +198,13 @@ namespace Pokladna
                     month = Int16.Parse(Console.ReadLine());
 
                     if (month < 1 || month > 12)
-                        Log.WriteConsoleLog("Cislo musi byt v rozmezi 1-12!");
+                        Log.WriteWarningLog("Cislo musi byt v rozmezi 1-12!");
                     else
                         process = true;
                 }
                 catch (Exception)
                 {
-                    Log.WriteConsoleLog("Zadany vstup neni cislo!");
+                    Log.WriteWarningLog("Zadany vstup neni cislo!");
                 }
             }
 
