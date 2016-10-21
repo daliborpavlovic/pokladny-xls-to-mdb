@@ -204,7 +204,7 @@ namespace Pokladna
                 }
                 catch (Exception)
                 {
-                    Log.WriteWarningLog("Zadany vstup neni cislo!");
+                    Log.WriteWarningLog("Zadany vstup neni cele cislo!");
                 }
             }
 

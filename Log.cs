@@ -17,8 +17,8 @@ namespace Pokladna
             string newLine = "\r\n";
             using (StreamWriter sw = File.AppendText(file))
             {
-                message = DateTime.Now.ToString("g") + " " + message.Trim() + newLine;
-                sw.Write(message);
+                message = DateTime.Now.ToString("g") + " " + message.Trim();
+                sw.Write(message + newLine);
                 Console.WriteLine(message);
             }
         }

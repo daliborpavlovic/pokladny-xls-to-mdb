@@ -35,7 +35,7 @@ namespace Pokladna
                     Methods.InsertData(destinationFile, tableName, dataset);
                 }
 
-            Console.WriteLine("Program finished successfully!");
+            Console.WriteLine("Program finished successfully! See file " + destinationFile);
             Console.ReadLine();
         }
     }
