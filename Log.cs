@@ -26,5 +26,11 @@ namespace Pokladna
             Log.WriteLog("ERROR: " + message);
             Environment.Exit(1);
         }
+
+        public static void WriteConsoleLog(string message)
+        {
+            Console.WriteLine(message);
+            Log.WriteLog("CONSOLE: " + message);
+        }
     }
 }

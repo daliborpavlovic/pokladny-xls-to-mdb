@@ -16,6 +16,9 @@ namespace Pokladna
             string destinationFile = @"PokladnaToPohoda.mdb";
             string[] tableNames = { "Prijmy", "Vydaje" };
 
+            // get number of the month to process
+            int month = Methods.GetMonth();
+
             // create destination database file
             Methods.CreateDatabase(destinationFile);
 
@@ -26,7 +29,7 @@ namespace Pokladna
                     // Methods.CreateTable(catalog, tableName);
 
                     // get data from the source database
-                    DataSet dataset = Methods.GetData(sourceFile, tableName);
+                    DataSet dataset = Methods.GetData(sourceFile, tableName, month);
 
                     // insert data from dataset into the destination file
                     Methods.InsertData(destinationFile, tableName, dataset);

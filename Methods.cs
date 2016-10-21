@@ -152,12 +152,17 @@ namespace Pokladna
 
         //}
 
-        public static DataSet GetData(string file, string tableName)
+        public static DataSet GetData(string file, string tableName, int month)
         {
-            string query = String.Format("SELECT [Id], [Datum], [CisloDokladu], [Popis], [Pohyb]," +
-                " Format([Castka], 'Currency') AS Castka," +
-                " '16P0' + Right([CisloDokladu], 4) AS CisloPohoda " +
-                "FROM Data WHERE CisloDokladu LIKE '{0}%'", tableName.Substring(0,1));
+            string query = 
+                String.Format(
+                    "SELECT [Id], [Datum], [CisloDokladu], [Popis], [Pohyb], " +
+                    "Format([Castka], 'Currency') AS Castka, " +
+                    " '16P0' + Right([CisloDokladu], 4) AS CisloPohoda " +
+                    "FROM Data " + 
+                    "WHERE CisloDokladu LIKE '{0}%' " +
+                    "AND DatePart('m', [Datum]) = {1}", tableName.Substring(0,1), month);
+
             OleDbConnection connection = new OleDbConnection(Methods.ConnectionString(file));
             DataSet dataSet = new DataSet();
 
@@ -178,6 +183,32 @@ namespace Pokladna
             }
 
             return SetDataRowsAdded(dataSet, tableName);
+        }
+
+        public static int GetMonth()
+        {
+            bool process = false;
+            int month = 0;
+
+            while (!process)
+            {
+                try
+                {
+                    Console.WriteLine("Zadej cislo mesice, ktery chces zpracovat: ");
+                    month = Int16.Parse(Console.ReadLine());
+
+                    if (month < 1 || month > 12)
+                        Log.WriteConsoleLog("Cislo musi byt v rozmezi 1-12!");
+                    else
+                        process = true;
+                }
+                catch (Exception)
+                {
+                    Log.WriteConsoleLog("Zadany vstup neni cislo!");
+                }
+            }
+
+            return month;
         }
 
         public static void InsertData(string file, string tableName, DataSet dataSet)
