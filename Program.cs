@@ -16,7 +16,7 @@ namespace Pokladna
             string destinationFile = @"PokladnaToPohoda.mdb";
             string[] tableNames = { "Prijmy", "Vydaje" };
 
-            // get number of the month to process
+            // get number of the month to process from the application user
             int month = Methods.GetMonth();
 
             // create destination database file
