@@ -1,5 +1,4 @@
 ﻿using System;
-using ADOX;
 using System.Data;
 using System.IO;
 using System.Collections.Generic;
@@ -13,25 +12,25 @@ namespace Pokladna
     {
         static void Main(string[] args)
         {
-            string sourceFile = @"Pokladna.mdb";
+            string sourceFile = "Pokladna.mdb";
             string destinationFile = @"PokladnaToPohoda.mdb";
             string[] tableNames = { "Prijmy", "Vydaje" };
 
             // create destination database file
-            Catalog catalog = Methods.CreateDatabase(destinationFile);
+            Methods.CreateDatabase(destinationFile);
 
             // for each table name
             foreach (string tableName in tableNames)
-            {
-                // create table in destination database
-                Methods.CreateTable(catalog, tableName);
+                {
+                    // create table in destination database
+                    // Methods.CreateTable(catalog, tableName);
 
-                // get data from the source database
-                DataSet dataset = Methods.GetData(sourceFile, tableName);
+                    // get data from the source database
+                    DataSet dataset = Methods.GetData(sourceFile, tableName);
 
-                // insert data from dataset into the destination file
-                Methods.InsertData(destinationFile, tableName, dataset);
-            }            
+                    // insert data from dataset into the destination file
+                    Methods.InsertData(destinationFile, tableName, dataset);
+                }
         }
     }
 }

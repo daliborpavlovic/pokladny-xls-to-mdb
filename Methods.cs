@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.OleDb;
-using ADOX;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,18 +16,48 @@ namespace Pokladna
             return String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0}", file);
         }
 
-        public static Column CreateColumn(Table table, string columnName)
-        {
-            Column column = new Column();
-            column.Name = columnName;
-            column.Attributes = ColumnAttributesEnum.adColNullable;
-            return column;
-        }
+        //public static Column CreateColumn(Table table, string columnName)
+        //{
+        //    Column column = new Column();
+        //    column.Name = columnName;
+        //    column.Attributes = ColumnAttributesEnum.adColNullable;
+        //    return column;
+        //}
 
-        public static Catalog CreateDatabase(string file)
+        //public static Catalog CreateDatabase(string file)
+        //{
+        //    Catalog catalog = new Catalog();
+
+        //    if (File.Exists(file))
+        //    {
+        //        try
+        //        {
+        //            File.Delete(file);
+        //        }
+        //        catch (Exception e)
+        //        {
+
+        //            Log.WriteErrorLog("Cannot delete old database file: " + e.Message);
+        //        }
+        //    }
+
+        //    try
+        //    {
+        //        catalog.Create(ConnectionString(file));
+        //        Log.WriteLog("Database created: " + file);
+        //    }
+        //    catch (Exception e)
+        //    {
+
+        //        Log.WriteErrorLog("Cannot create new database file: " + e.Message);
+        //    }
+
+        //    return catalog;
+        //}
+
+        public static void CreateDatabase(string file)
         {
-            Catalog catalog = new Catalog();
-            
+            // delete old file
             if (File.Exists(file))
             {
                 try
@@ -42,73 +71,93 @@ namespace Pokladna
                 }
             }
 
+            // create new file
+            Stream objStream = null;
+            FileStream objFileStream = null;
             try
             {
-                catalog.Create(ConnectionString(file));
+                System.Reflection.Assembly objAssembly =
+                    System.Reflection.Assembly.GetExecutingAssembly();
+                objStream =
+                    objAssembly.GetManifestResourceStream("Pokladna.PokladnaToPohoda.mdb");
+                byte[] abytResource = new Byte[objStream.Length];
+                objStream.Read(abytResource, 0, (int)objStream.Length);
+                objFileStream = new FileStream(file, FileMode.Create);
+                objFileStream.Write(abytResource, 0, (int)objStream.Length);
+                objFileStream.Close();
+
                 Log.WriteLog("Database created: " + file);
             }
             catch (Exception e)
             {
-
                 Log.WriteErrorLog("Cannot create new database file: " + e.Message);
             }
-
-            return catalog;
+            finally
+            {
+                if (objFileStream != null)
+                {
+                    objFileStream.Close();
+                    objFileStream = null;
+                }
+            }
         }
 
-        public static void CreateTable(Catalog catalog, string tableName)
-        {
-            Table table = new Table();
-            table.Name = tableName;
+        //public static void CreateTable(Catalog catalog, string tableName)
+        //{
+        //    Table table = new Table();
+        //    table.Name = tableName;
 
-            Column id = CreateColumn(table, "Id");
-            Column datum = CreateColumn(table, "Datum");
-            Column cisloDokladu = CreateColumn(table, "CisloDokladu");
-            Column popis = CreateColumn(table, "Popis");
-            Column pohyb = CreateColumn(table, "Pohyb");
-            Column castka = CreateColumn(table, "Castka");
+        //    Column id = CreateColumn(table, "Id");
+        //    Column datum = CreateColumn(table, "Datum");
+        //    Column cisloDokladu = CreateColumn(table, "CisloDokladu");
+        //    Column popis = CreateColumn(table, "Popis");
+        //    Column pohyb = CreateColumn(table, "Pohyb");
+        //    Column castka = CreateColumn(table, "Castka");
 
-            cisloDokladu.DefinedSize = 7;
-            popis.DefinedSize = 100;
+        //    cisloDokladu.DefinedSize = 7;
+        //    popis.DefinedSize = 100;
 
-            id.Type = DataTypeEnum.adInteger;
-            datum.Type = DataTypeEnum.adDate;
-            cisloDokladu.Type = DataTypeEnum.adVarWChar;
-            popis.Type = DataTypeEnum.adVarWChar;
-            pohyb.Type = DataTypeEnum.adInteger;
-            castka.Type = DataTypeEnum.adInteger;
+        //    id.Type = DataTypeEnum.adInteger;
+        //    datum.Type = DataTypeEnum.adDate;
+        //    cisloDokladu.Type = DataTypeEnum.adVarWChar;
+        //    popis.Type = DataTypeEnum.adVarWChar;
+        //    pohyb.Type = DataTypeEnum.adInteger;
+        //    castka.Type = DataTypeEnum.adInteger;
 
-            try
-            {
-                table.Columns.Append(id);
-                table.Columns.Append(datum);
-                table.Columns.Append(cisloDokladu);
-                table.Columns.Append(popis);
-                table.Columns.Append(pohyb);
-                table.Columns.Append(castka);
-            }
-            catch (Exception e)
-            {
+        //    try
+        //    {
+        //        table.Columns.Append(id);
+        //        table.Columns.Append(datum);
+        //        table.Columns.Append(cisloDokladu);
+        //        table.Columns.Append(popis);
+        //        table.Columns.Append(pohyb);
+        //        table.Columns.Append(castka);
+        //    }
+        //    catch (Exception e)
+        //    {
 
-                Log.WriteErrorLog(String.Format("Cannot create columns in the database table {0}: ", table) + e.Message);
-            }
+        //        Log.WriteErrorLog(String.Format("Cannot create columns in the database table {0}: ", table) + e.Message);
+        //    }
 
-            try
-            {
-                catalog.Tables.Append(table);
-                Log.WriteLog(String.Format("Database table {0} created", table.Name));
-            }
-            catch (Exception e)
-            {
+        //    try
+        //    {
+        //        catalog.Tables.Append(table);
+        //        Log.WriteLog(String.Format("Database table {0} created", table.Name));
+        //    }
+        //    catch (Exception e)
+        //    {
 
-                Log.WriteErrorLog("Cannot create table in the new database file: " + e.Message);
-            }
+        //        Log.WriteErrorLog("Cannot create table in the new database file: " + e.Message);
+        //    }
 
-        }
+        //}
 
         public static DataSet GetData(string file, string tableName)
         {
-            string query = String.Format("SELECT * FROM Data WHERE CisloDokladu LIKE '{0}%'", tableName.Substring(0,1));
+            string query = String.Format("SELECT [Id], [Datum], [CisloDokladu], [Popis], [Pohyb]," +
+                " Format([Castka], 'Currency') AS Castka," +
+                " '16P0' + Right([CisloDokladu], 4) AS CisloPohoda " +
+                "FROM Data WHERE CisloDokladu LIKE '{0}%'", tableName.Substring(0,1));
             OleDbConnection connection = new OleDbConnection(Methods.ConnectionString(file));
             DataSet dataSet = new DataSet();
 
@@ -133,8 +182,8 @@ namespace Pokladna
 
         public static void InsertData(string file, string tableName, DataSet dataSet)
         {
-            string insertString = String.Format("INSERT INTO {0}([Id], [Datum], [CisloDokladu], [Popis], [Pohyb], [Castka]) VALUES " + 
-                "(?, ?, ?, ?, ?, ?);", tableName); // 6 parameters
+            string insertString = String.Format("INSERT INTO {0}([Id], [Datum], [CisloPohoda], [CisloDokladu], [Popis], [Pohyb], [Castka]) VALUES " + 
+                "(?, ?, ?, ?, ?, ?, ?);", tableName); // 6 parameters
 
             try
             {
@@ -144,10 +193,11 @@ namespace Pokladna
                     adapter.InsertCommand = new OleDbCommand(insertString, connection);
                     adapter.InsertCommand.Parameters.Add("@Id", OleDbType.Integer, 0, "Id");
                     adapter.InsertCommand.Parameters.Add("@Datum", OleDbType.DBDate, 0, "Datum");
+                    adapter.InsertCommand.Parameters.Add("@CisloPohoda", OleDbType.VarWChar, 255, "CisloPohoda");
                     adapter.InsertCommand.Parameters.Add("@CisloDokladu", OleDbType.VarWChar, 7, "CisloDokladu");
                     adapter.InsertCommand.Parameters.Add("@Popis", OleDbType.VarWChar, 100, "Popis");
                     adapter.InsertCommand.Parameters.Add("@Pohyb", OleDbType.Integer, 0, "Pohyb");
-                    adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.Numeric, 0, "Castka");
+                    adapter.InsertCommand.Parameters.Add("@Castka", OleDbType.Currency, 0, "Castka");
 
                     connection.Open();
                     try
@@ -158,7 +208,7 @@ namespace Pokladna
                     catch (Exception e)
                     {
 
-                        Log.WriteErrorLog(String.Format("Cannot insert data into destination Access database file {0}: ", file) + e.Message);
+                        Log.WriteErrorLog(String.Format("Cannot insert data into destination database file {0}: ", file) + e.Message);
                     }
                 }
            
