@@ -173,7 +173,6 @@ namespace Pokladna
                     adapter.TableMappings.Add("Table", tableName);
                     adapter.Fill(dataSet);
                     Log.WriteLog(String.Format("Data received from the file {0} successfully", file));
-
                 }
 
             }
