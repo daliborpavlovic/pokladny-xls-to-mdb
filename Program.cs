@@ -27,13 +27,13 @@ namespace Pokladna
 
             // for each table name
             foreach (string tableName in tableNames)
-                {
-                    // get data from the source database
-                    DataSet dataset = Methods.GetData(sourceFile, tableName, month);
+            {
+                // get data from the source database
+                DataSet dataset = Methods.GetData(sourceFile, tableName, month);
 
-                    // insert data from dataset into the destination file
-                    Methods.InsertData(destinationFile, tableName, dataset);
-                }
+                // insert data from dataset into the destination file
+                Methods.InsertData(destinationFile, tableName, dataset);
+            }
 
             Console.WriteLine();
             Console.WriteLine("Program finished successfully! See file " + destinationFile);
