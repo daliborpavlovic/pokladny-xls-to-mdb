@@ -28,9 +28,6 @@ namespace Pokladna
             // for each table name
             foreach (string tableName in tableNames)
                 {
-                    // create table in destination database
-                    // Methods.CreateTable(catalog, tableName);
-
                     // get data from the source database
                     DataSet dataset = Methods.GetData(sourceFile, tableName, month);
 
