@@ -18,10 +18,11 @@ namespace Pokladna
 
             // get number of the month to process from the application user
             int month = Methods.GetMonth();
+
             Console.WriteLine();
+            Console.WriteLine("Program output: ");
 
             // create destination database file
-            Console.WriteLine("Program output: ");
             Methods.CreateDatabase(destinationFile);
 
             // for each table name

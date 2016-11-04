@@ -16,45 +16,6 @@ namespace Pokladna
             return String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0}", file);
         }
 
-        //public static Column CreateColumn(Table table, string columnName)
-        //{
-        //    Column column = new Column();
-        //    column.Name = columnName;
-        //    column.Attributes = ColumnAttributesEnum.adColNullable;
-        //    return column;
-        //}
-
-        //public static Catalog CreateDatabase(string file)
-        //{
-        //    Catalog catalog = new Catalog();
-
-        //    if (File.Exists(file))
-        //    {
-        //        try
-        //        {
-        //            File.Delete(file);
-        //        }
-        //        catch (Exception e)
-        //        {
-
-        //            Log.WriteErrorLog("Cannot delete old database file: " + e.Message);
-        //        }
-        //    }
-
-        //    try
-        //    {
-        //        catalog.Create(ConnectionString(file));
-        //        Log.WriteLog("Database created: " + file);
-        //    }
-        //    catch (Exception e)
-        //    {
-
-        //        Log.WriteErrorLog("Cannot create new database file: " + e.Message);
-        //    }
-
-        //    return catalog;
-        //}
-
         public static void CreateDatabase(string file)
         {
             // delete old file
@@ -102,56 +63,6 @@ namespace Pokladna
             }
         }
 
-        //public static void CreateTable(Catalog catalog, string tableName)
-        //{
-        //    Table table = new Table();
-        //    table.Name = tableName;
-
-        //    Column id = CreateColumn(table, "Id");
-        //    Column datum = CreateColumn(table, "Datum");
-        //    Column cisloDokladu = CreateColumn(table, "CisloDokladu");
-        //    Column popis = CreateColumn(table, "Popis");
-        //    Column pohyb = CreateColumn(table, "Pohyb");
-        //    Column castka = CreateColumn(table, "Castka");
-
-        //    cisloDokladu.DefinedSize = 7;
-        //    popis.DefinedSize = 100;
-
-        //    id.Type = DataTypeEnum.adInteger;
-        //    datum.Type = DataTypeEnum.adDate;
-        //    cisloDokladu.Type = DataTypeEnum.adVarWChar;
-        //    popis.Type = DataTypeEnum.adVarWChar;
-        //    pohyb.Type = DataTypeEnum.adInteger;
-        //    castka.Type = DataTypeEnum.adInteger;
-
-        //    try
-        //    {
-        //        table.Columns.Append(id);
-        //        table.Columns.Append(datum);
-        //        table.Columns.Append(cisloDokladu);
-        //        table.Columns.Append(popis);
-        //        table.Columns.Append(pohyb);
-        //        table.Columns.Append(castka);
-        //    }
-        //    catch (Exception e)
-        //    {
-
-        //        Log.WriteErrorLog(String.Format("Cannot create columns in the database table {0}: ", table) + e.Message);
-        //    }
-
-        //    try
-        //    {
-        //        catalog.Tables.Append(table);
-        //        Log.WriteLog(String.Format("Database table {0} created", table.Name));
-        //    }
-        //    catch (Exception e)
-        //    {
-
-        //        Log.WriteErrorLog("Cannot create table in the new database file: " + e.Message);
-        //    }
-
-        //}
-
         public static DataSet GetData(string file, string tableName, int month)
         {
             string query = 
@@ -161,7 +72,7 @@ namespace Pokladna
                     " '16P0' + Right([CisloDokladu], 4) AS CisloPohoda " +
                     "FROM Data " + 
                     "WHERE CisloDokladu LIKE '{0}%' " +
-                    "AND DatePart('m', [Datum]) = {1}", tableName.Substring(0,1), month);
+                    "AND DatePart('m', [Datum]) = {1} ", tableName.Substring(0,1), month);
 
             OleDbConnection connection = new OleDbConnection(Methods.ConnectionString(file));
             DataSet dataSet = new DataSet();
@@ -212,7 +123,7 @@ namespace Pokladna
 
         public static void InsertData(string file, string tableName, DataSet dataSet)
         {
-            string insertString = String.Format("INSERT INTO {0}([Id], [Datum], [CisloPohoda], [CisloDokladu], [Popis], [Pohyb], [Castka]) VALUES " + 
+            string insertString = String.Format("INSERT INTO {0}([Id], [Datum], [Cislo], [PDoklad], [SText], [Pohyb], [Kc0]) VALUES " + 
                 "(?, ?, ?, ?, ?, ?, ?);", tableName); // 6 parameters
 
             try
@@ -256,8 +167,7 @@ namespace Pokladna
                 row.SetAdded();
             }
 
-            return dataSet;
-            
+            return dataSet;            
         }
     }
 }
